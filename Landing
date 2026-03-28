@@ -1,0 +1,338 @@
+import logoImg from "@assets/WhatsApp_Image_2026-03-09_at_6.15.47_AM_1773098311852.jpeg";
+import heroImg from "@assets/FINAL_LINKEDIN_1774121181217.jpg";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { LineChart, ShieldCheck, Layers, Brain, Briefcase, Target, BarChart3, ArrowRight, Mail, CheckCircle2 } from "lucide-react";
+import { insertInquirySchema, type InsertInquiry } from "@shared/schema";
+import { useCreateInquiry } from "@/hooks/use-inquiries";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+export default function Home() {
+  const { toast } = useToast();
+  const createInquiry = useCreateInquiry();
+  const [emailCaptured, setEmailCaptured] = useState(false);
+  const [captureEmail, setCaptureEmail] = useState("");
+
+  const form = useForm<InsertInquiry>({
+    resolver: zodResolver(insertInquirySchema),
+    defaultValues: { name: "", email: "", service: "", message: "" },
+  });
+
+  function onSubmit(data: InsertInquiry) {
+    createInquiry.mutate(data, {
+      onSuccess: () => {
+        toast({ title: "Mensaje enviado con éxito", description: "Te respondo personalmente a la brevedad." });
+        form.reset();
+      },
+      onError: (error) => {
+        toast({ title: "Error al enviar el mensaje", description: error.message, variant: "destructive" });
+      },
+    });
+  }
+
+  async function handleEmailCapture(e: React.FormEvent) {
+    e.preventDefault();
+    if (!captureEmail) return;
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: captureEmail }),
+      });
+      if (res.ok) {
+        setEmailCaptured(true);
+      } else {
+        const data = await res.json();
+        alert(data.message || "Error al suscribir");
+      }
+    } catch (err) {
+      alert("Error de conexión");
+    }
+  }
+
+  const fadeIn = {
+    initial: { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, margin: "-100px" },
+    transition: { duration: 0.6, ease: "easeOut" }
+  };
+
+  const services = [
+    { title: "Mentoría 1:1", icon: <Target className="w-6 h-6 text-primary" />, description: "Acompañamiento personalizado para desarrollar y ejecutar tu propio plan de trading sistemático, ajustado a tu perfil de riesgo y capital." },
+    { title: "Formación en Trading Sistemático", icon: <LineChart className="w-6 h-6 text-primary" />, description: "Programa estructurado enfocado en reglas claras, gestión monetaria y la eliminación del componente emocional en la toma de decisiones." },
+    { title: "Revisión de Sistemas", icon: <BarChart3 className="w-6 h-6 text-primary" />, description: "Auditoría de tu operativa actual. Análisis de backtesting, métricas de riesgo (Drawdown, Expectativa) y optimización de estructura." }
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+      <style>{`
+        [data-replit-badge], #replit-badge, 
+        iframe[src*="replit"], 
+        div[style*="position: fixed"][style*="bottom"],
+        div[style*="position:fixed"][style*="bottom"] {
+          display: none !important;
+          visibility: hidden !important;
+          opacity: 0 !important;
+          pointer-events: none !important;
+          height: 0 !important;
+          width: 0 !important;
+        }
+      `}</style>
+
+      <nav className="sticky top-0 z-50 bg-slate-900 border-b border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="text-white font-bold text-2xl tracking-tight">
+            ArielC<span className="text-emerald-400">Trader</span>
+          </div>
+          <div className="hidden md:flex gap-8 text-sm font-medium text-slate-300">
+            <a href="#quien-soy" className="hover:text-white transition-colors">Quién soy</a>
+            <a href="#enfoque" className="hover:text-white transition-colors">Mi Enfoque</a>
+            <a href="#servicios" className="hover:text-white transition-colors">Servicios</a>
+          </div>
+          <Button asChild variant="outline" className="rounded-full px-6 border-slate-600 text-white hover:bg-slate-800">
+            <a href="#contacto">Contacto</a>
+          </Button>
+        </div>
+      </nav>
+
+      <section className="pt-10 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full flex flex-col-reverse md:flex-row items-center gap-8 lg:gap-16">
+        <motion.div className="flex-1 space-y-8 text-center md:text-left" initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-200/50 text-slate-600 text-sm font-medium">
+            <span className="w-2 h-2 rounded-full bg-slate-600"></span>
+            Asesoría Profesional en Trading
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-[1.15] tracking-tight">
+            Trading con método.<br />
+            <span className="text-slate-500">Riesgo controlado.</span><br />
+            Decisiones racionales.
+          </h1>
+          <p className="text-lg text-slate-600 max-w-xl mx-auto md:mx-0 leading-relaxed">
+            De la gestión corporativa al trading sistemático. Estrategia, disciplina y control de riesgo para operar con profesionalismo y efectividad.
+          </p>
+          <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+            <Button size="lg" className="rounded-full px-8 h-14 text-base" asChild>
+              <a href="#contacto">Trabajemos juntos <ArrowRight className="ml-2 w-4 h-4" /></a>
+            </Button>
+            <Button size="lg" variant="outline" className="rounded-full px-8 h-14 text-base" asChild>
+              <a href="#enfoque">Conocer metodología</a>
+            </Button>
+          </div>
+        </motion.div>
+        <motion.div className="flex-1 w-full max-w-md md:max-w-none" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.2 }}>
+          <div className="group aspect-[4/5] rounded-[2rem] overflow-hidden bg-slate-200 relative shadow-2xl shadow-slate-900/10 border-8 border-white">
+            <img src={heroImg} alt="Ariel Correa" className="w-full h-full object-cover grayscale opacity-90 group-hover:grayscale-0 transition-all duration-700" style={{ objectPosition: "35% center" }} />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent pointer-events-none"></div>
+          </div>
+        </motion.div>
+      </section>
+
+      <section id="quien-soy" className="py-12 bg-white border-y border-slate-100">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div {...fadeIn} className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold text-slate-900">Experiencia corporativa.<br className="hidden sm:block" /> Disciplina de mercado.</h2>
+              <div className="w-16 h-1 bg-slate-900 mx-auto mt-6"></div>
+            </div>
+            <div className="prose prose-lg prose-slate mx-auto text-slate-600 leading-loose">
+              <p>Mi enfoque hacia los mercados financieros está desprovisto del ruido habitual que inunda la industria. Mi trayectoria no comenzó en el trading, sino en la alta gestión corporativa. Como ex ejecutivo en <strong>Nike Argentina y Europa</strong>, Philip Morris, Pepsico y posteriormente en la dirección de negocios locales, aprendí que el éxito sostenido no proviene de la intuición, sino de los procesos, las estructuras y el control riguroso del riesgo.</p>
+              <p>He trasladado esta misma filosofía corporativa al trading. Opero desde hace más de 15 años sistemas estructurados basados en reglas claras, eliminando la ambigüedad y la carga emocional en cada ejecución.</p>
+              <blockquote className="border-l-4 border-slate-900 pl-6 italic text-slate-800 font-medium my-8">"El trading sistemático profesional no supone adivinar hacia dónde irá el precio. Se basa en la aplicación de reglas claras de manera repetitiva, para lograr resultados consistentes en una serie de trades. La disciplina y la estructura son los pilares de este enfoque."</blockquote>
+              <p>Mi objetivo es ayudarte a desarrollar un sistema de trading robusto y objetivo, totalmente basado en reglas, que te permita operar con confianza y control, sin depender de la intuición o el "sentimiento" del mercado.</p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section id="enfoque" className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <motion.div {...fadeIn} className="text-center max-w-3xl mx-auto mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">Un enfoque basado en la estructura</h2>
+          <p className="text-lg text-slate-600">Mi metodología se basa en la ejecución objetiva de un conjunto de reglas. No existen sistemas mágicos, pero sí la posibilidad real de tradear exitosamente. Ofrezco una estructura de trabajo clara y metodológica, y el desarrollo conjunto de un sistema adaptado a tu tiempo disponible y tu psicología.</p>
+        </motion.div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {[
+            { icon: <LineChart className="w-8 h-8" />, title: "Trading Sistemático", desc: "Reglas predefinidas para entrar, gestionar y salir de cada posición. No hay lugar para la improvisación ni el trading por 'sentimiento'." },
+            { icon: <ShieldCheck className="w-8 h-8" />, title: "Gestión del Riesgo", desc: "La preservación del capital es la prioridad número uno. Tamaño de posición calculado matemáticamente antes de cada operación." },
+            { icon: <Layers className="w-8 h-8" />, title: "Estructura Operativa", desc: "Definición clara de rutinas, horarios, plataformas y planes de contingencia. Tratamos el trading como un negocio formal." },
+            { icon: <Brain className="w-8 h-8" />, title: "Psicología y Ejecución", desc: "Al tener un sistema claro y testeado, se reduce la carga cognitiva y el estrés, permitiendo una ejecución impecable sin dudas." }
+          ].map((item, idx) => (
+            <motion.div key={idx} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: idx * 0.1 }}>
+              <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white h-full hover:-translate-y-1 transition-transform duration-300">
+                <CardContent className="p-8">
+                  <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-900 mb-6">{item.icon}</div>
+                  <h3 className="text-xl font-semibold text-slate-900 mb-3">{item.title}</h3>
+                  <p className="text-slate-600 leading-relaxed">{item.desc}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      <section className="py-12 bg-slate-900 text-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            <motion.div {...fadeIn}>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">Para quién es este servicio</h2>
+              <div className="space-y-6 text-slate-300 text-lg leading-relaxed">
+                <p>Esta asesoría está diseñada para <strong className="text-white">profesionales de cualquier disciplina con capacidad de adoptar y adaptar procesos de ejecución.</strong> No es necesaria experiencia previa en los mercados, pero sí es fundamental la capacidad de ejecutar procesos de manera repetitiva y disciplinada.</p>
+                <p>Busco trabajar con personas que entienden que el éxito requiere esfuerzo, tiempo y método. Personas que rechazan la mentalidad de "apuesta" o "dinero rápido" y valoran la estructura, la seriedad y el análisis objetivo.</p>
+                <ul className="space-y-4 mt-8">
+                  {["Desean un enfoque lógico y basado en reglas.", "Entienden que el mercado involucra riesgos que deben gestionarse.", "Cuentan con el tiempo para formarse adecuadamente.", "Valoran la experiencia y la madurez sobre el sensacionalismo."].map((bullet, i) => (
+                    <li key={i} className="flex items-start">
+                      <Briefcase className="w-6 h-6 mr-3 text-slate-400 shrink-0 mt-0.5" />
+                      <span>{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
+            <motion.div className="relative" initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
+              <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=80&auto=format&fit=crop" alt="Profesional trabajando" className="relative z-10 rounded-2xl shadow-2xl shadow-black/50 border border-slate-700/50 grayscale hover:grayscale-0 transition-all duration-700" />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      <section id="servicios" className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <motion.div {...fadeIn} className="text-center max-w-3xl mx-auto mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">Mis Servicios</h2>
+          <p className="text-lg text-slate-600">Opciones de colaboración estructuradas para distintos niveles de necesidad y experiencia.</p>
+        </motion.div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {services.map((service, idx) => (
+            <motion.div key={idx} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: idx * 0.1 }} className="flex">
+              <Card className="flex flex-col border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300 w-full relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-full h-1 bg-slate-200 group-hover:bg-slate-900 transition-colors duration-300"></div>
+                <CardContent className="p-8 flex-1 flex flex-col">
+                  <div className="mb-6 bg-slate-50 w-12 h-12 rounded-xl flex items-center justify-center">{service.icon}</div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-4">{service.title}</h3>
+                  <p className="text-slate-600 mb-8 flex-1">{service.description}</p>
+                  <Button variant="outline" className="w-full justify-between group-hover:bg-slate-900 group-hover:text-white transition-colors" asChild>
+                    <a href="#contacto" onClick={() => form.setValue("service", service.title)}>
+                      Consultar disponibilidad <ArrowRight className="w-4 h-4 ml-2" />
+                    </a>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      <section className="py-10 bg-slate-900">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div {...fadeIn}>
+            {!emailCaptured ? (
+              <>
+                <h3 className="text-2xl font-bold text-white mb-2">Recibí contenido de valor</h3>
+                <p className="text-slate-400 mb-6">Análisis, conceptos y herramientas de trading sistemático. Sin spam.</p>
+                <form onSubmit={handleEmailCapture} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                  <input type="email" required value={captureEmail} onChange={(e) => setCaptureEmail(e.target.value)} placeholder="tu@email.com" className="flex-1 px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:border-slate-400" />
+                  <button type="submit" className="px-6 py-3 rounded-xl bg-white text-slate-900 font-semibold hover:bg-slate-100 transition-colors whitespace-nowrap">Suscribirme</button>
+
+                </form>
+              </>
+            ) : (
+              <div className="flex flex-col items-center gap-3 text-white">
+                <CheckCircle2 className="w-10 h-10 text-green-400" />
+                <p className="text-lg font-semibold">¡Listo! Te sumaste a la lista.</p>
+                <p className="text-slate-400">Vas a recibir el primer mail en breve.</p>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      </section>
+
+      <section id="contacto" className="py-12 bg-slate-100 border-t border-slate-200">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div {...fadeIn} className="bg-white rounded-[2rem] p-8 md:p-12 shadow-xl shadow-slate-200/50 border border-slate-100">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-bold text-slate-900 mb-4">Iniciá el diálogo</h2>
+              <p className="text-slate-600">Completá el formulario detallando tu perfil y expectativas. Te respondo personalmente a la brevedad.</p>
+            </div>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField control={form.control} name="name" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-900 font-medium">Nombre completo</FormLabel>
+                      <FormControl><Input placeholder="Ej. Carlos Rodríguez" className="bg-slate-50 border-slate-200 focus-visible:ring-slate-900" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="email" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-900 font-medium">Correo electrónico</FormLabel>
+                      <FormControl><Input type="email" placeholder="carlos@empresa.com" className="bg-slate-50 border-slate-200 focus-visible:ring-slate-900" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+                <FormField control={form.control} name="service" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-slate-900 font-medium">Servicio de interés</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="bg-slate-50 border-slate-200 focus:ring-slate-900">
+                          <SelectValue placeholder="Seleccioná un servicio" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Mentoría 1:1">Mentoría 1:1</SelectItem>
+                        <SelectItem value="Formación en Trading Sistemático">Formación en Trading Sistemático</SelectItem>
+                        <SelectItem value="Revisión de Sistemas">Revisión de Sistemas</SelectItem>
+                        <SelectItem value="Otro">Otro / Consulta General</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="message" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-slate-900 font-medium">Tu mensaje</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Contame brevemente sobre tu experiencia actual y qué buscás lograr..." className="min-h-[120px] bg-slate-50 border-slate-200 focus-visible:ring-slate-900 resize-y" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <Button type="submit" className="w-full h-14 text-base rounded-xl bg-slate-900 hover:bg-slate-800 text-white" disabled={createInquiry.isPending}>
+                  {createInquiry.isPending ? "Enviando..." : "Enviar Solicitud"}
+                </Button>
+              </form>
+            </Form>
+          </motion.div>
+        </div>
+      </section>
+
+      <footer className="bg-slate-950 py-12 text-slate-400 text-sm border-t border-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-col md:flex-row items-center gap-4 text-center md:text-left">
+            <span className="font-bold text-xl text-white tracking-tight">ArielC<span className="text-emerald-400">Trader</span></span>
+            <span className="hidden md:inline-block w-1 h-1 rounded-full bg-slate-700"></span>
+            <span>© {new Date().getFullYear()} Ariel Correa. Todos los derechos reservados.</span>
+          </div>
+          <div className="flex gap-6">
+            <a href="mailto:arielctrader@planocerotraing.com" className="hover:text-white transition-colors flex items-center gap-2">
+              <Mail className="w-4 h-4" /><span>Contacto</span>
+            </a>
+            <a href="https://www.linkedin.com/in/ariel-correa-343a0a3/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+              LinkedIn
+            </a>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 text-center md:text-left text-xs text-slate-600">
+          Aviso de riesgo: Operar en los mercados financieros conlleva un alto nivel de riesgo y puede no ser adecuado para todos los inversores. El contenido de esta web tiene fines puramente educativos y no constituye asesoramiento financiero.
+        </div>
+      </footer>
+    </div>
+  );
+}
